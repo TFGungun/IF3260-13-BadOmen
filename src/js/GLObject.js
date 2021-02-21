@@ -82,7 +82,7 @@ class GLObject {
   }
 
   draw() {
-    //
+    // Gonna delete this later
     const gl = this.gl;
     gl.useProgram(this.shader);
     var vertexPos = gl.getAttribLocation(this.shader, "a_pos");
@@ -93,11 +93,12 @@ class GLObject {
     gl.uniform4fv(uniformCol, this.color);
     gl.enableVertexAttribArray(vertexPos);
     gl.drawArrays(gl.TRIANGLES, 0, this.va.length / 2);
-
+    
     // console.log("REEEE");
   }
 
   drawSelect(selectProgram) {
+    // Gonna delete this later
     // selectProgram is a WebGL shader program... with selection shaders
     const gl = this.gl;
     const id = this.id;
@@ -123,5 +124,6 @@ class GLObject {
     ];
     gl.uniform4fv(uniformCol, uniformId);
     gl.drawArrays(gl.TRIANGLES, 0, this.va.length / 2);
+    
   }
 }
