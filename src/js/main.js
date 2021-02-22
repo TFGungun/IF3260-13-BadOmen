@@ -3,6 +3,9 @@ canvas.width = 800;
 canvas.height = 600;
 var gl = canvas.getContext("webgl2");
 
+// TODO : UBAH ROTATION DAN SCALING KE LOCAL
+// TODO : JANGAN CUMAN SELECT DOANG TAPI BISA TARIK VERTEX
+
 let appState = {
   mousePos: {
     x: 0,
@@ -35,9 +38,23 @@ async function main() {
     },
     false
   );
+  canvas.addEventListener(
+    "mouseleave",
+    (event) => {
+      appState.mousePos = {
+        x: 0,
+        y: 0,
+      };
+    },
+    false
+  );
 
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
-  const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
+  // const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
+  // const triangleData = [0, 0, 200, 0, 0, 200]; // in pixel space
+  // const triangleData = [-100, -100, 0, 100, 100, -100]; // in pixel space
+  const triangleDataCentered = [-100, -100, 0, 100, 100, -100]; // in pixel space
+  const triangleData = [100, 100, 200, 300, 300, 100]; // in pixel space
 
   const selectedColor = [0.9, 0.1, 0.1, 1.0];
 
@@ -116,34 +133,52 @@ async function main() {
   );
 
   // GL object instantiation
+
   // These should probably be instantly put into an array
   const glObject = new GLObject(1, shaderProgram, gl);
-  glObject.setVertexArray(triangleData);
+  glObject.setVertexArray(triangleDataCentered);
   glObject.SetColorByArray([0.88, 0.72, 0.1, 1.0]);
   glObject.setPosition(0, 0);
   glObject.setRotation(0);
-  glObject.setScale(1, 1);
+  glObject.setScale(2, 1);
   glObject.assignProjectionMatrix();
+  // glObject.centerOriginsSetOffsetAndFixVertices();
   glObject.bind();
   // glObject.draw();
 
   const glObject2 = new GLObject(4, shaderProgram, gl);
   glObject2.setVertexArray(triangleData);
   glObject2.setColor(0.8, 0.1, 0.86, 1.0);
-  glObject2.setPosition(600, 700);
+  glObject2.setPosition(400, 300);
   glObject2.setRotation(180);
-  glObject2.setScale(1, 1);
+  glObject2.setScale(2, 1);
+  glObject2.centerOriginsSetOffsetAndFixVertices();
   glObject2.assignProjectionMatrix();
   glObject2.bind();
   // glObject2.draw();
+
+  // const glObject3 = new GLObject(8, shaderProgram, gl);
+  // glObject3.setVertexArray(triangleDataCentered);
+  // glObject3.setColor(0.2, 0.3, 0.86, 1.0);
+  // glObject3.setPosition(400, 300);
+  // glObject3.setRotation(90);
+  // glObject3.setScale(1, 1);
+  // glObject3.centerOriginsSetOffsetAndFixVertices();
+  // glObject3.assignProjectionMatrix();
+  // glObject3.bind();
 
   // Creates a renderer and renders the previous objects
   const renderer = new Renderer();
   renderer.addObject(glObject);
   renderer.addObject(glObject2);
+  // renderer.addObject(glObject3);
   renderer.render();
 
   function render(now) {
+    // rotateAllObjects();
+    // actual render function here
+    // renderer.objectList[0].va[0] += 1;
+    // renderer.objectList[0].bind();
     gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -166,32 +201,8 @@ async function main() {
     gl.readPixels(pixelX, pixelY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
     const id = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24);
 
-    // Resets the object color
+    recolorSelectedObject(id);
 
-    // Recolors the selected object
-    if (id != -1) {
-      var selObj = renderer.objectList.find((x) => x.id === id);
-      if (id != appState.oldPick.id) {
-        if (appState.oldPick != -1) {
-          var oldSelObj = renderer.objectList.find(
-            (x) => x.id === appState.oldPick
-          );
-          oldSelObj.SetColorByArray(appState.oldPickColor);
-        }
-        appState.oldPickColor = selObj.color;
-        appState.oldPick = selObj.id;
-      }
-      // console.log("oldPickColor : " + appState.oldPickColor);
-      selObj.SetColorByArray(selectedColor);
-    } else {
-      if (appState.oldPick != -1) {
-        var oldSelObj = renderer.objectList.find(
-          (x) => x.id === appState.oldPick
-        );
-        oldSelObj.SetColorByArray(appState.oldPickColor);
-      }
-      appState.oldPick = -1;
-    }
     // console.log(id);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     // draw the actual objects
@@ -199,7 +210,50 @@ async function main() {
     renderer.render();
     requestAnimationFrame(render);
   }
+
+  // rotate the objects
+  function rotateAllObjects() {
+    renderer.objectList.forEach((element) => {
+      element.setRotation(element.rot + 1);
+      element.assignProjectionMatrix();
+    });
+  }
+
+  function recolorSelectedObject(id) {
+    // Recolors the selected object
+    if (id != -1) {
+      var selObj = renderer.objectList.find((x) => x.id === id);
+
+      // Resets the old object color
+      if (id != appState.oldPick.id) {
+        resetSelObjColor();
+      }
+      appState.oldPickColor = selObj.color;
+      appState.oldPick = selObj.id;
+      selObj.SetColorByArray(selectedColor);
+    }
+
+    // console.log("oldPickColor : " + appState.oldPickColor);
+    else {
+      if (appState.oldPick != -1) {
+        resetSelObjColor();
+      }
+      appState.oldPick = -1;
+    }
+
+    function resetSelObjColor() {
+      if (appState.oldPick != -1) {
+        var oldSelObj = renderer.objectList.find(
+          (x) => x.id === appState.oldPick
+        );
+        oldSelObj.SetColorByArray(appState.oldPickColor);
+      }
+    }
+  }
+
   requestAnimationFrame(render);
+
+  // End of main
 }
 
 main();
