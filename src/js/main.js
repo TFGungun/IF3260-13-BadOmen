@@ -13,7 +13,16 @@ let appState = {
   },
   oldPickColor: [],
   oldPick: -1,
+  selId: -1,
+  selectedObject: null,
 };
+
+let GLobjectList = [];
+
+function getClickedGLObject() {
+  const id = appState.selId;
+  return GLobjectList.find((x) => x.id === id);
+}
 
 async function main() {
   // Checks if browser supports WebGL
@@ -48,13 +57,29 @@ async function main() {
     },
     false
   );
+  canvas.addEventListener(
+    "click",
+    function () {
+      let clickedGLObject = getClickedGLObject();
+      if (clickedGLObject) {
+        appState.selectedObject = clickedGLObject;
+        console.log(appState.selectedObject);
+        appState.selectedObject.setColor(0, 0, 0, 1);
+      } else {
+        appState.selectedObject = null;
+        console.log(appState.selectedObject);
+      }
+    },
+    false
+  );
 
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
-  // const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
+  const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
   // const triangleData = [0, 0, 200, 0, 0, 200]; // in pixel space
   // const triangleData = [-100, -100, 0, 100, 100, -100]; // in pixel space
   const triangleDataCentered = [-100, -100, 0, 100, 100, -100]; // in pixel space
-  const triangleData = [100, 100, 200, 300, 300, 100]; // in pixel space
+  const triangleDataFromZero = [0, 0, 100, 200, 200, 0]; // in pixel space
+  // const triangleData = [100, 100, 200, 300, 300, 100]; // in pixel space
 
   const selectedColor = [0.9, 0.1, 0.1, 1.0];
 
@@ -137,49 +162,78 @@ async function main() {
   // These should probably be instantly put into an array
   const glObject = new GLObject(1, shaderProgram, gl);
   glObject.setVertexArray(triangleDataCentered);
+  // glObject.setVertexArray(triangleData);
   glObject.SetColorByArray([0.88, 0.72, 0.1, 1.0]);
   glObject.setPosition(0, 0);
   glObject.setRotation(0);
-  glObject.setScale(2, 1);
+  glObject.setScale(1, 1);
+  glObject.centerOriginsSetOffsetAndFixVertices();
   glObject.assignProjectionMatrix();
-  // glObject.centerOriginsSetOffsetAndFixVertices();
-  glObject.bind();
+  // glObject.bind();
   // glObject.draw();
 
   const glObject2 = new GLObject(4, shaderProgram, gl);
   glObject2.setVertexArray(triangleData);
+  // glObject2.setVertexArray(triangleData);
   glObject2.setColor(0.8, 0.1, 0.86, 1.0);
-  glObject2.setPosition(400, 300);
-  glObject2.setRotation(180);
-  glObject2.setScale(2, 1);
+  glObject2.setPosition(0, 0);
+  glObject2.setRotation(0);
+  glObject2.setScale(1, 1);
   glObject2.centerOriginsSetOffsetAndFixVertices();
   glObject2.assignProjectionMatrix();
-  glObject2.bind();
+  // glObject2.bind();
   // glObject2.draw();
 
-  // const glObject3 = new GLObject(8, shaderProgram, gl);
-  // glObject3.setVertexArray(triangleDataCentered);
-  // glObject3.setColor(0.2, 0.3, 0.86, 1.0);
-  // glObject3.setPosition(400, 300);
-  // glObject3.setRotation(90);
-  // glObject3.setScale(1, 1);
-  // glObject3.centerOriginsSetOffsetAndFixVertices();
-  // glObject3.assignProjectionMatrix();
+  const glObject3 = new GLObject(8, shaderProgram, gl);
+  glObject3.setVertexArray(triangleDataFromZero);
+  // glObject3.setVertexArray(triangleData);
+  glObject3.setColor(0.2, 0.3, 0.86, 1.0);
+  glObject3.setPosition(0, 0);
+  glObject3.setRotation(0);
+  glObject3.setScale(1, 1);
+  glObject3.centerOriginsSetOffsetAndFixVertices();
+  glObject3.assignProjectionMatrix();
   // glObject3.bind();
+
+  // glObject2.bind();
+
+  // var objToBind = 0;
+  // var timer = 0;
 
   // Creates a renderer and renders the previous objects
   const renderer = new Renderer();
+  GLobjectList = renderer.objectList;
+  console.log("GLobjectList : " + GLobjectList);
   renderer.addObject(glObject);
   renderer.addObject(glObject2);
-  // renderer.addObject(glObject3);
+  renderer.addObject(glObject3);
+  console.log("GLobjectList : " + GLobjectList);
   renderer.render();
 
   function render(now) {
+    // if (timer > 25) {
+    //   // renderer.objectList[objToBind].bind();
+    //   // renderer.objectList[objToBind].SetColorByArray([
+    //   //   renderer.objectList[objToBind].color[0] + 0.1,
+    //   //   renderer.objectList[objToBind].color[1] + 0.1,
+    //   //   renderer.objectList[objToBind].color[2] + 0.1,
+    //   //   1,
+    //   // ]);
+    //   objToBind++;
+    //   if (objToBind >= renderer.objectList.length) {
+    //     objToBind = 0;
+    //   }
+    //   timer = 0;
+    // } else {
+    //   timer++;
+    // }
+
     // rotateAllObjects();
+
     // actual render function here
     // renderer.objectList[0].va[0] += 1;
     // renderer.objectList[0].bind();
-    gl.clearColor(1, 1, 1, 1);
+    gl.clearColor(0.9, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     // drawing texture
@@ -200,8 +254,9 @@ async function main() {
     const data = new Uint8Array(4);
     gl.readPixels(pixelX, pixelY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
     const id = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24);
-
-    recolorSelectedObject(id);
+    appState.selId = id;
+    // console.log("Id : " + id);
+    // recolorSelectedObject(id);
 
     // console.log(id);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -221,20 +276,19 @@ async function main() {
 
   function recolorSelectedObject(id) {
     // Recolors the selected object
-    if (id != -1) {
+    if (id >= 0) {
       var selObj = renderer.objectList.find((x) => x.id === id);
 
-      // Resets the old object color
-      if (id != appState.oldPick.id) {
-        resetSelObjColor();
+      if (selObj) {
+        // Resets the old object color
+        if (id != appState.oldPick.id) {
+          resetSelObjColor();
+        }
+        appState.oldPickColor = selObj.color;
+        appState.oldPick = selObj.id;
+        selObj.SetColorByArray(selectedColor);
       }
-      appState.oldPickColor = selObj.color;
-      appState.oldPick = selObj.id;
-      selObj.SetColorByArray(selectedColor);
-    }
-
-    // console.log("oldPickColor : " + appState.oldPickColor);
-    else {
+    } else {
       if (appState.oldPick != -1) {
         resetSelObjColor();
       }

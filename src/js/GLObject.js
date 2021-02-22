@@ -62,7 +62,7 @@ class GLObject {
     const origMat = [1, 0, 0, 0, 1, 0, uo, vo, 1];
     const negaOrigMat = [1, 0, 0, 0, 1, 0, -uo, -vo, 1];
     if (this.temp < 5) {
-      console.log("origMat[" + this.id + "] : " + origMat);
+      // console.log("origMat[" + this.id + "] : " + origMat);
     }
 
     const u = this.pos[0]; //- this.offset[0] / 2;
@@ -89,16 +89,24 @@ class GLObject {
     //   // scaleMat,
     //   // 3
     // );
+
     const projectionMat =
       // multiplyMatrix(
       multiplyMatrix(
         multiplyMatrix(
-          // multiplyMatrix(
-          multiplyMatrix(negaOrigMat, rotationMat, 3),
-          // origMat,
-          // 3
-          // ),
-          scaleMat,
+          multiplyMatrix(
+            multiplyMatrix(negaOrigMat, rotationMat, 3),
+            // rotationMat,
+            origMat,
+            3
+          ),
+          multiplyMatrix(
+            multiplyMatrix(negaOrigMat, scaleMat, 3),
+            // rotationMat,
+            origMat,
+            3
+          ),
+          // scaleMat,
           3
         ),
         translateMat,
@@ -108,13 +116,13 @@ class GLObject {
         // 3
       );
     if (this.temp < 5) {
-      console.log("rotationMat : " + rotationMat);
-      console.log("origMat : " + origMat);
-      console.log(
-        "multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3) : " +
-          multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3))
-      );
-      console.log("projectionMat[" + this.id + "] : " + projectionMat);
+      // console.log("rotationMat : " + rotationMat);
+      // console.log("origMat : " + origMat);
+      // console.log(
+      //   "multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3) : " +
+      //     multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3))
+      // );
+      // console.log("projectionMat[" + this.id + "] : " + projectionMat);
       this.temp += 1;
     }
     return projectionMat;
@@ -123,11 +131,11 @@ class GLObject {
   assignProjectionMatrix() {
     // assigns the projection matrix to this object
     this.projectionMat = this.calcProjectionMatrix().slice();
-    // console.log("Proj Mat : " + this.projectionMat);
+    // // console.log("Proj Mat : " + this.projectionMat);
   }
 
   centerOriginsSetOffsetAndFixVertices() {
-    console.log("ORIGINAL VA : " + this.va);
+    // console.log("ORIGINAL VA : " + this.va);
 
     var numOfVertices = this.va.length;
 
@@ -141,7 +149,7 @@ class GLObject {
     var tempOrigins = [(minX + maxX) / 2, (minY + maxY) / 2];
 
     this.origin = tempOrigins;
-    console.log("Origins : " + this.origin);
+    // console.log("Origins : " + this.origin);
 
     this.offset = [this.origin[0], this.origin[1]].slice();
     // var tempVa = [];
@@ -162,7 +170,7 @@ class GLObject {
     // }
     // this.setVertexArray(tempVa);
 
-    console.log("CORECCTED VA : " + this.va);
+    // console.log("CORECCTED VA : " + this.va);
     this.assignProjectionMatrix();
 
     // function uniq_fast(array) {
@@ -189,11 +197,17 @@ class GLObject {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.va), gl.STATIC_DRAW);
   }
 
+  unbind() {
+    const gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  }
+
   draw() {
     // Gonna delete this later
+
     if (this.temp < 20) {
       // this.temp++;
-      // console.log(this.va);
+      // // console.log(this.va);
     }
     const gl = this.gl;
     gl.useProgram(this.shader);
@@ -206,7 +220,7 @@ class GLObject {
     gl.enableVertexAttribArray(vertexPos);
     gl.drawArrays(gl.TRIANGLES, 0, this.va.length / 2);
 
-    // console.log("REEEE");
+    // // console.log("REEEE");
   }
 
   drawSelect(selectProgram) {

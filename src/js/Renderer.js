@@ -19,7 +19,9 @@ class Renderer {
 
   render() {
     for (const obj of this.objectList) {
+      obj.bind();
       obj.draw();
+      obj.unbind();
     }
     // console.log("RENDER.jS RENDER DONE");
   }
@@ -27,7 +29,9 @@ class Renderer {
   renderTex(selectProgram) {
     // selectProgram is a WebGL shader program... with selection shaders
     for (const obj of this.objectList) {
+      obj.bind();
       obj.drawSelect(selectProgram);
+      obj.unbind();
     }
   }
 }
