@@ -22,6 +22,40 @@ let appState = {
 
 let GLobjectList = [];
 
+function updateLineLength() {
+  var newLength;
+  newLength = document.getElementById("line-length").value;
+
+  if (appState.selectedObject instanceof GLObjectLine && newLength != "") {
+    var pivotX = appState.selectedObject.va[0];
+    var pivotY = appState.selectedObject.va[1];
+    var xDiff = appState.selectedObject.va[2] - pivotX;
+    var yDiff = appState.selectedObject.va[3] - pivotY;
+    var rad = Math.atan(yDiff/xDiff);
+    var sin = Math.sin(rad);
+    var cos = Math.cos(rad);
+    console.log("xDiff :" + xDiff);
+    console.log("yDiff :" + yDiff);
+    console.log("RAD :" + rad);
+    console.log("SIN :" + sin);
+    console.log("COS :" +cos);
+    console.log("New x :" + parseInt(newLength));
+
+    // Set New Length
+    appState.selectedObject.va[2] = pivotX + parseInt(newLength) * cos;
+    appState.selectedObject.va[3] = pivotY + parseInt(newLength) * sin;
+
+  }
+  else if(newLength == "") {
+    alert("Input new line length");
+  }
+  else {
+    alert("Object selected is not a line");
+  }
+
+}
+
+
 function updateRectSideLength() {
   // console.log(appState.selectedObject.typeof);
   var newLength = document.getElementById("square-side-length");
@@ -137,6 +171,11 @@ async function main() {
 
   // Change Rectangle Side Length
   btnUpdateSquareSideLength.addEventListener("click", updateRectSideLength);
+
+
+  // Change Line Length
+  btnUpdateLineLength.addEventListener("click", updateLineLength);
+
 
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
   const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
