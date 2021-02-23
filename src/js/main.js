@@ -81,6 +81,24 @@ async function main() {
   const triangleDataFromZero = [0, 0, 100, 200, 200, 0]; // in pixel space
   // const triangleData = [100, 100, 200, 300, 300, 100]; // in pixel space
 
+  const lineData = [
+  200.0, 200.0,
+  500.0, 500.0]
+  const rectangleData = [
+    100.0, 100.0,
+    500.0, 100.0,
+    100.0, 500.0,
+    100.0, 500.0,
+    500.0, 100.0,
+    500.0, 500.0,
+  ]
+  const polygonData = [
+    100.0, 200.0,
+    200.0, 200.0,
+    100.0, 100.0,
+    500.0, 100.0,
+  ]
+
   const selectedColor = [0.9, 0.1, 0.1, 1.0];
 
   const shaderProgram = await initShaderFiles(
@@ -160,10 +178,10 @@ async function main() {
   // GL object instantiation
 
   // These should probably be instantly put into an array
-  const glObject = new GLObject(1, shaderProgram, gl);
-  glObject.setVertexArray(triangleDataCentered);
+  const glObject = new GLObjectPolygon(1, shaderProgram, gl);
+  glObject.setVertexArray(polygonData);
   // glObject.setVertexArray(triangleData);
-  glObject.SetColorByArray([0.88, 0.72, 0.1, 1.0]);
+  glObject.SetColorByArray([1, 0, 0, 1.0]);
   glObject.setPosition(0, 0);
   glObject.setRotation(0);
   glObject.setScale(1, 1);
@@ -172,6 +190,7 @@ async function main() {
   // glObject.bind();
   // glObject.draw();
 
+  /*
   const glObject2 = new GLObject(4, shaderProgram, gl);
   glObject2.setVertexArray(triangleData);
   // glObject2.setVertexArray(triangleData);
@@ -194,7 +213,7 @@ async function main() {
   glObject3.centerOriginsSetOffsetAndFixVertices();
   glObject3.assignProjectionMatrix();
   // glObject3.bind();
-
+  */
   // glObject2.bind();
 
   // var objToBind = 0;
@@ -205,8 +224,8 @@ async function main() {
   GLobjectList = renderer.objectList;
   console.log("GLobjectList : " + GLobjectList);
   renderer.addObject(glObject);
-  renderer.addObject(glObject2);
-  renderer.addObject(glObject3);
+  //renderer.addObject(glObject2);
+  //renderer.addObject(glObject3);
   console.log("GLobjectList : " + GLobjectList);
   renderer.render();
 
@@ -228,7 +247,7 @@ async function main() {
     //   timer++;
     // }
 
-    // rotateAllObjects();
+    //rotateAllObjects();
 
     // actual render function here
     // renderer.objectList[0].va[0] += 1;
