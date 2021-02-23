@@ -45,5 +45,3 @@ class GLObjectRectangle extends GLObject{
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 }
-
-}

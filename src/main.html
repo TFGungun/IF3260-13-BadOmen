@@ -9,7 +9,78 @@
 </head>
 
 <body>
+
     <canvas id="webgl-app"></canvas>
+
+    <!-- To Edit Canvas Element -->
+    <table>
+            <tr>
+                <td>
+                    Line length :
+                </td>
+                <td>
+                    <input type="text" id="line-length">
+                </td>
+                <td>
+                    (Pixel)
+                </td>
+                <td>
+                    <button id="line-length-btn">Update</button>
+                </td>
+            </tr>
+    
+            <tr>
+                <td>
+                    Square Side Length :
+                </td>
+                <td>
+                    <input type="text" id="square-side-length">
+                </td>
+                <td>
+                    (Pixel)
+                </td>
+                <td>
+                    <button id="square-side-length-btn">Update</button>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>Change Polygon Color with RGB Value</td>
+            </tr>
+    
+            <tr>
+                <td>R : </td>
+                <td><input type="text" id="red"></td>
+                <td>
+                    (0 - 255)
+                </td>
+            </tr>
+    
+            <tr>
+                <td>G : </td>
+                <td><input type="text" id="green"></td>
+                <td>
+                    (0 - 255)
+                </td>
+            </tr>
+    
+            <tr>
+                <td>B : </td>
+                <td><input type="text" id="blue"></td>
+                <td>
+                    (0 - 255)
+                </td>
+            </tr>
+    
+            <tr>
+                <td>
+                    <button id="color-update">Update Color</button>
+                </td>
+            </tr>
+    
+        </table>
+
+    
     <script src="js/utils/matrix.js"></script>
     <script src="js/loaders/loadshader.js"></script>
     <script src="js/GLObject.js"></script>

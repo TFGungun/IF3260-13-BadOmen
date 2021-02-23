@@ -3,6 +3,9 @@ canvas.width = 800;
 canvas.height = 600;
 var gl = canvas.getContext("webgl2");
 
+var btnUpdateLineLength = document.getElementById("line-length-btn");
+var btnUpdateSquareSideLength = document.getElementById("square-side-length-btn");
+var btnUpdateColor = document.getElementById("color-update"); 
 // TODO : UBAH ROTATION DAN SCALING KE LOCAL
 // TODO : JANGAN CUMAN SELECT DOANG TAPI BISA TARIK VERTEX
 
@@ -18,6 +21,52 @@ let appState = {
 };
 
 let GLobjectList = [];
+
+function updateRectSideLength() {
+  // console.log(appState.selectedObject.typeof);
+  var newLength = document.getElementById("square-side-length");
+  if (appState.selectedObject instanceof GLObjectRectangle) {
+    var vertices = appState.selectedObject.va;
+    var pivotX = vertices[0];
+    var pivotY = vertices[1];
+    var currLength = vertices[2] - vertices[0];
+    var newLength;
+    if (document.getElementById("square-side-length").value != "") {
+      newLength = document.getElementById("square-side-length").value;
+      
+      // Move the Vertices based on size changes
+
+      // Bottom-Right Points
+      appState.selectedObject.va[2] = parseInt(pivotX) + parseInt(newLength);
+      appState.selectedObject.va[3] = parseInt(pivotY);
+
+      appState.selectedObject.va[8] = parseInt(pivotX) + parseInt(newLength);
+      appState.selectedObject.va[9] = parseInt(pivotY);
+
+      
+     // Top-Left Points
+      appState.selectedObject.va[4] = parseInt(pivotX);
+      appState.selectedObject.va[5] = parseInt(pivotY) + parseInt(newLength);
+
+      appState.selectedObject.va[6] = parseInt(pivotX);
+      appState.selectedObject.va[7] = parseInt(pivotY) + parseInt(newLength);
+
+      // Top-Right Points
+      appState.selectedObject.va[10] = parseInt(pivotX) + parseInt(newLength);
+      appState.selectedObject.va[11] = parseInt(pivotY) + parseInt(newLength);
+      
+    }
+    else {
+      alert("Masukkan Panjang Sisi");
+    }
+
+  }
+  else {
+    alert("Object Selected is not a rectangle");
+  }
+  
+}
+
 
 function getClickedGLObject() {
   const id = appState.selId;
@@ -72,6 +121,22 @@ async function main() {
     },
     false
   );
+
+  // Event Listeners for user input
+  // Change Polygon Color
+  btnUpdateColor.addEventListener("click", () => {
+    var R = 0;
+    var B = 0;
+    var G = 0;
+    R = document.getElementById("red").value / 255;
+    B = document.getElementById("blue").value / 255;
+    G = document.getElementById("green").value / 255;
+    appState.selectedObject.setColor(R, G, B, 1);
+  } 
+  );
+
+  // Change Rectangle Side Length
+  btnUpdateSquareSideLength.addEventListener("click", updateRectSideLength);
 
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
   const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
@@ -178,17 +243,27 @@ async function main() {
   // GL object instantiation
 
   // These should probably be instantly put into an array
-  const glObject = new GLObjectPolygon(1, shaderProgram, gl);
-  glObject.setVertexArray(polygonData);
-  // glObject.setVertexArray(triangleData);
+  // const glObject = new GLObjectRectangle(1, shaderProgram, gl);
+  // glObject.setVertexArray(rectangleData);
+  // // glObject.setVertexArray(triangleData);
+  // glObject.SetColorByArray([1, 0, 0, 1.0]);
+  // glObject.setPosition(0, 0);
+  // glObject.setRotation(0);
+  // glObject.setScale(1, 1);
+  // glObject.centerOriginsSetOffsetAndFixVertices();
+  // glObject.assignProjectionMatrix();
+
+  // glObject.bind();
+  // glObject.draw();
+
+  const glObject = new GLObjectLine(1, shaderProgram, gl);
+  glObject.setVertexArray([100, 100, 200, 200]);
   glObject.SetColorByArray([1, 0, 0, 1.0]);
   glObject.setPosition(0, 0);
   glObject.setRotation(0);
   glObject.setScale(1, 1);
   glObject.centerOriginsSetOffsetAndFixVertices();
   glObject.assignProjectionMatrix();
-  // glObject.bind();
-  // glObject.draw();
 
   /*
   const glObject2 = new GLObject(4, shaderProgram, gl);
