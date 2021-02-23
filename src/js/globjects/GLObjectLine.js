@@ -17,4 +17,33 @@ class GLObjectLine extends GLObject{
 	    
 	    console.log("REEEE");
 	  }
+
+	drawSelect(selectProgram) {
+	    // Gonna delete this later
+	    // selectProgram is a WebGL shader program... with selection shaders
+	    const gl = this.gl;
+	    const id = this.id;
+	    gl.useProgram(selectProgram);
+	    var vertexPos = gl.getAttribLocation(selectProgram, "a_pos");
+	    var uniformCol = gl.getUniformLocation(selectProgram, "u_fragColor");
+	    var uniformPos = gl.getUniformLocation(selectProgram, "u_proj_mat");
+	    gl.uniformMatrix3fv(uniformPos, false, this.projectionMat);
+	    gl.vertexAttribPointer(
+	      vertexPos,
+	      2, // it's 2 dimensional
+	      gl.FLOAT,
+	      false,
+	      0,
+	      0
+	    );
+	    gl.enableVertexAttribArray(vertexPos);
+	    const uniformId = [
+	      ((id >> 0) & 0xff) / 0xff,
+	      ((id >> 8) & 0xff) / 0xff,
+	      ((id >> 16) & 0xff) / 0xff,
+	      ((id >> 24) & 0xff) / 0xff,
+	    ];
+	    gl.uniform4fv(uniformCol, uniformId);
+	    gl.drawArrays(gl.LINES, 0, 2);
+	  }
 }
