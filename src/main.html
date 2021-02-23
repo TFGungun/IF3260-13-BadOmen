@@ -22,7 +22,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><h3>Cara Mengganti Panjang Garis</h3></td>
+                        <td>
+                            <h3>Cara Mengganti Panjang Garis</h3>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -37,7 +39,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><h3>Cara Mengganti Panjang Persegi</h3></td>
+                        <td>
+                            <h3>Cara Mengganti Panjang Persegi</h3>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -51,7 +55,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><h3>Cara Mengganti Warna Polygon</h3></td>
+                        <td>
+                            <h3>Cara Mengganti Warna Polygon</h3>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -68,83 +74,100 @@
             </td>
         </tr>
     </table>
-    
+
 
     <!-- To Edit Canvas Element -->
     <table>
-            <tr>
-                <td>
-                    Line length :
-                </td>
-                <td>
-                    <input type="text" id="line-length">
-                </td>
-                <td>
-                    (Pixel)
-                </td>
-                <td>
-                    <button id="line-length-btn">Update</button>
-                </td>
-            </tr>
-    
-            <tr>
-                <td>
-                    Square Side Length :
-                </td>
-                <td>
-                    <input type="text" id="square-side-length">
-                </td>
-                <td>
-                    (Pixel)
-                </td>
-                <td>
-                    <button id="square-side-length-btn">Update</button>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>Change Polygon Color with RGB Value</td>
-            </tr>
-    
-            <tr>
-                <td>R : </td>
-                <td><input type="text" id="red"></td>
-                <td>
-                    (0 - 255)
-                </td>
-            </tr>
-    
-            <tr>
-                <td>G : </td>
-                <td><input type="text" id="green"></td>
-                <td>
-                    (0 - 255)
-                </td>
-            </tr>
-    
-            <tr>
-                <td>B : </td>
-                <td><input type="text" id="blue"></td>
-                <td>
-                    (0 - 255)
-                </td>
-            </tr>
-    
-            <tr>
-                <td>
-                    <button id="color-update">Update Color</button>
-                </td>
-            </tr>
-    
-        </table>
+        <tr>
+            <td>
+                Selected Object id :
+            </td>
+            <td>
+                <p id="sel-id">None</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Hovered Object id :
+            </td>
+            <td>
+                <p id="hov-id">None</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Line length :
+            </td>
+            <td>
+                <input type="text" id="line-length">
+            </td>
+            <td>
+                (Pixel)
+            </td>
+            <td>
+                <button id="line-length-btn">Update</button>
+            </td>
+        </tr>
 
-    
+        <tr>
+            <td>
+                Square Side Length :
+            </td>
+            <td>
+                <input type="text" id="square-side-length">
+            </td>
+            <td>
+                (Pixel)
+            </td>
+            <td>
+                <button id="square-side-length-btn">Update</button>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Change Polygon Color with RGB Value</td>
+        </tr>
+
+        <tr>
+            <td>R : </td>
+            <td><input type="text" id="red"></td>
+            <td>
+                (0 - 255)
+            </td>
+        </tr>
+
+        <tr>
+            <td>G : </td>
+            <td><input type="text" id="green"></td>
+            <td>
+                (0 - 255)
+            </td>
+        </tr>
+
+        <tr>
+            <td>B : </td>
+            <td><input type="text" id="blue"></td>
+            <td>
+                (0 - 255)
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <button id="color-update">Update Color</button>
+            </td>
+        </tr>
+
+    </table>
+
+
     <script src="js/utils/matrix.js"></script>
     <script src="js/loaders/loadshader.js"></script>
     <script src="js/GLObject.js"></script>
     <script src="js/globjects/GLObjectLine.js"></script>
     <script src="js/globjects/GLObjectRectangle.js"></script>
     <script src="js/globjects/GLObjectPolygon.js"></script>
+    <script src="js/globjects/GLObjectDragger.js"></script>
     <script src="js/Renderer.js"></script>
     <script src="js/main.js"></script>
 </body>
