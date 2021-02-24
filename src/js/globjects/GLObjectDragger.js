@@ -26,11 +26,21 @@ class GLObjectDragger extends GLObject {
     this.setRotation(0);
     this.setScale(1, 1);
 
-    this.vertId = -1;
+    this.vertId = [];
+    this.vertPos = [];
   }
 
-  setVertexId(id) {
-    this.vertId = id;
+  setVertexId(idArray) {
+    this.vertId = idArray;
+  }
+
+  addVertexId(id) {
+    this.vertId.push(id);
+  }
+
+  setVertPosition(x, y) {
+    // The position, an "array" (well, it's really a tuple) of x and y
+    this.vertPos = [x, y];
   }
 
   draw() {
