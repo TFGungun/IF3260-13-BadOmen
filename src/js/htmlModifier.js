@@ -47,9 +47,11 @@ function exportModel() {
 
 async function importModel() {
   //testState = true;
-
-  initModelFile(gl, shaderProgramGlobal, "data.json", renderer);
-  //   console.log("import succeed");
+  if(document.getElementById('fileupload').value !== "")
+  {
+    var path = (window.URL || window.webkitURL).createObjectURL(document.getElementById('fileupload').files[0]);
+    initModelFile(gl, shaderProgramGlobal, path, renderer);
+  }
 }
 
 function updateLineLength() {
