@@ -8,8 +8,11 @@ var btnUpdateSquareSideLength = document.getElementById(
   "square-side-length-btn"
 );
 var btnUpdateColor = document.getElementById("color-update");
+var btnExportModel = document.getElementById("export-model-btn"); 
+var btnImportModel = document.getElementById("import-model-btn"); 
 // TODO : UBAH ROTATION DAN SCALING KE LOCAL
 // TODO : JANGAN CUMAN SELECT DOANG TAPI BISA TARIK VERTEX
+const renderer = new Renderer();
 
 let appState = {
   mousePos: {
@@ -33,6 +36,63 @@ let appState = {
 
 let GLobjectList = [];
 let draggers = [];
+
+function convertObjectToData(glObject)
+{
+  var data;
+  if(glObject instanceof GLObjectLine)
+  {
+    data = new LineData();
+  } else if(glObject instanceof GLObjectRectangle){
+    data = new RectangleData();
+  } else if(glObject instanceof GLObjectPolygon){
+    data = new PolygonData();
+  }
+
+  data.setVertexArray(glObject.va);
+  data.SetColorByArray(glObject.color);
+  data.setPosition(glObject.pos);
+  data.setRotation(glObject.rot);
+  data.setScale(glObject.scale);
+  data.setOrigin(glObject.origin);
+
+  return data;
+
+}
+function exportModel()
+{
+  var objectsData = [];
+
+  for (var i = 0; i < GLobjectList.length; i++) {
+    objectsData[i] = convertObjectToData(GLobjectList[i]);
+  }
+
+  var json = JSON.stringify(objectsData);
+  let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(json);
+
+  let exportFileDefaultName = 'data.json';
+
+  let linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+  console.log(json);
+}
+
+async function importModel()
+{
+  //testState = true;
+  
+  
+  initModelFile(
+    gl,
+    shaderProgramGlobal,
+    "data.json",
+    renderer
+  );
+  console.log("import succeed");
+  
+}
 
 function updateLineLength() {
   var newLength;
@@ -327,7 +387,11 @@ async function main() {
 
   // Change Line Length
   btnUpdateLineLength.addEventListener("click", updateLineLength);
-
+  
+  // Export & Import Model
+  btnExportModel.addEventListener("click", exportModel);
+  btnImportModel.addEventListener("click", importModel);
+  
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
   const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
   // const triangleData = [0, 0, 200, 0, 0, 200]; // in pixel space
@@ -487,11 +551,10 @@ async function main() {
   // var timer = 0;
 
   // Creates a renderer and renders the previous objects
-  const renderer = new Renderer();
   GLobjectList = renderer.objectList;
   console.log("GLobjectList : " + GLobjectList);
   renderer.addObject(glObject);
-  renderer.addObject(glObject2);
+  //renderer.addObject(glObject2);
   //renderer.addObject(glObject3);
   console.log("GLobjectList : " + GLobjectList);
   renderer.render();

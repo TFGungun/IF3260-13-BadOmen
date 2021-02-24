@@ -23,6 +23,14 @@
                     </tr>
                     <tr>
                         <td>
+                            <button id = "export-model-btn">Export Model</button>
+                        </td>
+                        <td>
+                            <button id = "import-model-btn">Import Model</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             <h3>Cara Mengganti Panjang Garis</h3>
                         </td>
                     </tr>
@@ -68,6 +76,19 @@
                             3. Masukkan warna baru dengan memasukkan kode R(Red), G(Green), B(Blue) pada kolom warna
                             <br>
                             4. Tekan tombol "Update Color" yang berada di bawah kolom warna
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h3>Export & Import</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            1. Klik "Export Model" untuk mendownload model dalam bentuk JSON.
+                            <br>
+                            2. Untuk mengimport, pindahkan JSON yang telah didownload atau dimodifikasi tersebut ke folder src, lalu klik "Import Model"
+                            <br>
                         </td>
                     </tr>
                 </table>
@@ -163,10 +184,15 @@
 
     <script src="js/utils/matrix.js"></script>
     <script src="js/loaders/loadshader.js"></script>
+    <script src="js/loaders/loadFile.js"></script>
     <script src="js/GLObject.js"></script>
+    <script src="js/glObjects/GLObjectType.js"></script>
     <script src="js/globjects/GLObjectLine.js"></script>
     <script src="js/globjects/GLObjectRectangle.js"></script>
     <script src="js/globjects/GLObjectPolygon.js"></script>
+    <script src="js/globjects/LineData.js"></script>
+    <script src="js/globjects/PolygonData.js"></script>
+    <script src="js/globjects/RectangleData.js"></script>
     <script src="js/globjects/GLObjectDragger.js"></script>
     <script src="js/Renderer.js"></script>
     <script src="js/main.js"></script>
