@@ -1,7 +1,7 @@
 class GLObject {
   constructor(id, shader, gl) {
     // id is a number, shader is a webgl program. gl is a WebGL context
-    this.id = id;
+    this.id = id; // ID GLOBJECT HARUS >= 1
     this.shader = shader;
     this.gl = gl;
 

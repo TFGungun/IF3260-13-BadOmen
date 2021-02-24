@@ -4,6 +4,11 @@ class Renderer {
     this.count = 0;
   }
 
+  clearObjList() {
+    this.objectList = new Array();
+    this.count = 0;
+  }
+
   addObject(obj) {
     // obj is a GLObject
     this.objectList.push(obj);

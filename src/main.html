@@ -23,10 +23,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <button id = "export-model-btn">Export Model</button>
+                            <button id="export-model-btn">Export Model</button>
                         </td>
                         <td>
-                            <button id = "import-model-btn">Import Model</button>
+                            <button id="import-model-btn">Import Model</button>
                         </td>
                     </tr>
                     <tr>
@@ -87,7 +87,8 @@
                         <td>
                             1. Klik "Export Model" untuk mendownload model dalam bentuk JSON.
                             <br>
-                            2. Untuk mengimport, pindahkan JSON yang telah didownload atau dimodifikasi tersebut ke folder src, lalu klik "Import Model"
+                            2. Untuk mengimport, pindahkan JSON yang telah didownload atau dimodifikasi tersebut ke
+                            folder src, lalu klik "Import Model"
                             <br>
                         </td>
                     </tr>
@@ -181,20 +182,38 @@
 
     </table>
 
-
+    <!-- Utils -->
     <script src="js/utils/matrix.js"></script>
     <script src="js/loaders/loadshader.js"></script>
     <script src="js/loaders/loadFile.js"></script>
-    <script src="js/GLObject.js"></script>
+    <!-- GL Objects -->
+    <script src="js/globjects/GLObject.js"></script>
     <script src="js/glObjects/GLObjectType.js"></script>
     <script src="js/globjects/GLObjectLine.js"></script>
     <script src="js/globjects/GLObjectRectangle.js"></script>
     <script src="js/globjects/GLObjectPolygon.js"></script>
+    <!-- GL Objects Data -->
     <script src="js/globjects/LineData.js"></script>
     <script src="js/globjects/PolygonData.js"></script>
     <script src="js/globjects/RectangleData.js"></script>
-    <script src="js/globjects/GLObjectDragger.js"></script>
+    <!-- Debugs -->
+    <script src="js/debug/objectData.js"></script>
+    <!-- GL Context -->
+    <script src="js/glcommons/glcontext.js"></script>
     <script src="js/Renderer.js"></script>
+    <!-- Globals -->
+    <script src="js/globals.js"></script>
+    <!-- Draggers -->
+    <script src="js/globjects/GLObjectDragger.js"></script>
+    <script src="js/glcommons/draggers.js"></script>
+    <!-- GLUtils -->
+    <script src="js/glcommons/glutils.js"></script>
+    <!-- Main Fragments -->
+    <script src="js/htmlModifier.js"></script>
+    <script src="js/eventListeners.js"></script>
+    <!-- EXTRA DEBUG -->
+    <script src="js/debug/objectCreatorsDebug.js"></script>
+    <!-- Main -->
     <script src="js/main.js"></script>
 </body>
 

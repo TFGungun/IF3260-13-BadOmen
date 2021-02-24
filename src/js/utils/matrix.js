@@ -75,8 +75,6 @@ function getMatrixOfMinors(array, colsize) {
   for (let rowi = 0; rowi < colsize; rowi++) {
     for (let colj = 0; colj < colsize; colj++) {
       const minorMatrix = getMatrixMinor(array, 3, rowi, colj);
-      console.log("Matrix minor for : (" + rowi + "," + colj + ") : ");
-      console.log(minorMatrix);
       tempMatrix.push(get2DMatrixDeternminant(minorMatrix));
     }
   }
@@ -100,15 +98,9 @@ function getCofactoredMatrix(array, colsize) {
 
 function getMatrixInverse(array, colsize) {
   const matrixOfMinors = getMatrixOfMinors(array, colsize);
-  console.log("matrixOfMinors : ");
-  console.log(matrixOfMinors);
   const matrixOfCofactors = getCofactoredMatrix(matrixOfMinors, colsize);
-
   const transPosedMatrixOfCofactors = transposeMatrix(matrixOfCofactors, 3);
-  console.log("transPosedMatrixOfCofactors : ");
-  console.log(transPosedMatrixOfCofactors);
   const determinant = get3DMatrixDeternminant(array);
-  console.log("DETERMINANT : " + determinant);
 
   let tempMat = [];
   for (let index = 0; index < transPosedMatrixOfCofactors.length; index++) {
@@ -117,10 +109,3 @@ function getMatrixInverse(array, colsize) {
 
   return tempMat;
 }
-
-let tryMatrix = [0.1, 0, 0, 0, 0.1, 0, 270, 270, 1];
-const invMatrix = getMatrixInverse(tryMatrix, 3);
-console.log("TryMarix : ");
-console.log(tryMatrix);
-console.log("Inv matrix : ");
-console.log(invMatrix);
