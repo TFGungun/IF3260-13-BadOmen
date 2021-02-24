@@ -48,6 +48,7 @@ async function initModelFile(gl, shaderProgram, filename, renderer) {
       glObject.centerOriginsSetOffsetAndFixVertices();
     } else {
       glObject.origin = GlDataList[i].origin[0];
+      glObject.offset = GlDataList[i].origin[0];
     }
     glObject.assignProjectionMatrix();
     renderer.addObject(glObject);
