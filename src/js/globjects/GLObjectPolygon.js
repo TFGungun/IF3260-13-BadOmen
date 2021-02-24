@@ -1,24 +1,24 @@
-class GLObjectPolygon extends GLObject{
-	constructor(id, shader, gl){
-		super(id, shader, gl);
-	}
-	draw() {
-	    //
-	    const gl = this.gl;
-	    gl.useProgram(this.shader);
-	    var vertexPos = gl.getAttribLocation(this.shader, "a_pos");
-	    var uniformCol = gl.getUniformLocation(this.shader, "u_fragColor");
-	    var uniformPos = gl.getUniformLocation(this.shader, "u_proj_mat");
-	    gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
-	    gl.uniformMatrix3fv(uniformPos, false, this.projectionMat);
-	    gl.uniform4fv(uniformCol, this.color);
-	    gl.enableVertexAttribArray(vertexPos);
-	    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.va.length/2);
-	    
-	    console.log("REEEE");
-	 }
+class GLObjectPolygon extends GLObject {
+  constructor(id, shader, gl) {
+    super(id, shader, gl);
+  }
+  draw() {
+    //
+    const gl = this.gl;
+    gl.useProgram(this.shader);
+    var vertexPos = gl.getAttribLocation(this.shader, "a_pos");
+    var uniformCol = gl.getUniformLocation(this.shader, "u_fragColor");
+    var uniformPos = gl.getUniformLocation(this.shader, "u_proj_mat");
+    gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix3fv(uniformPos, false, this.projectionMat);
+    gl.uniform4fv(uniformCol, this.color);
+    gl.enableVertexAttribArray(vertexPos);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.va.length / 2);
 
-	drawSelect(selectProgram) {
+    // console.log("REEEE");
+  }
+
+  drawSelect(selectProgram) {
     // Gonna delete this later
     // selectProgram is a WebGL shader program... with selection shaders
     const gl = this.gl;
@@ -44,6 +44,6 @@ class GLObjectPolygon extends GLObject{
       ((id >> 24) & 0xff) / 0xff,
     ];
     gl.uniform4fv(uniformCol, uniformId);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.va.length/2);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.va.length / 2);
   }
 }

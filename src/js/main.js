@@ -8,8 +8,8 @@ var btnUpdateSquareSideLength = document.getElementById(
   "square-side-length-btn"
 );
 var btnUpdateColor = document.getElementById("color-update");
-var btnExportModel = document.getElementById("export-model-btn"); 
-var btnImportModel = document.getElementById("import-model-btn"); 
+var btnExportModel = document.getElementById("export-model-btn");
+var btnImportModel = document.getElementById("import-model-btn");
 // TODO : UBAH ROTATION DAN SCALING KE LOCAL
 // TODO : JANGAN CUMAN SELECT DOANG TAPI BISA TARIK VERTEX
 const renderer = new Renderer();
@@ -34,18 +34,16 @@ let appState = {
   },
 };
 
-let GLobjectList = [];
+// let renderer.objectList = [];
 let draggers = [];
 
-function convertObjectToData(glObject)
-{
+function convertObjectToData(glObject) {
   var data;
-  if(glObject instanceof GLObjectLine)
-  {
+  if (glObject instanceof GLObjectLine) {
     data = new LineData();
-  } else if(glObject instanceof GLObjectRectangle){
+  } else if (glObject instanceof GLObjectRectangle) {
     data = new RectangleData();
-  } else if(glObject instanceof GLObjectPolygon){
+  } else if (glObject instanceof GLObjectPolygon) {
     data = new PolygonData();
   }
 
@@ -57,41 +55,32 @@ function convertObjectToData(glObject)
   data.setOrigin(glObject.origin);
 
   return data;
-
 }
-function exportModel()
-{
+function exportModel() {
   var objectsData = [];
 
-  for (var i = 0; i < GLobjectList.length; i++) {
-    objectsData[i] = convertObjectToData(GLobjectList[i]);
+  for (var i = 0; i < renderer.objectList.length; i++) {
+    objectsData[i] = convertObjectToData(renderer.objectList[i]);
   }
 
   var json = JSON.stringify(objectsData);
-  let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(json);
+  let dataUri =
+    "data:application/json;charset=utf-8," + encodeURIComponent(json);
 
-  let exportFileDefaultName = 'data.json';
+  let exportFileDefaultName = "data.json";
 
-  let linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
+  let linkElement = document.createElement("a");
+  linkElement.setAttribute("href", dataUri);
+  linkElement.setAttribute("download", exportFileDefaultName);
   linkElement.click();
   console.log(json);
 }
 
-async function importModel()
-{
+async function importModel() {
   //testState = true;
-  
-  
-  initModelFile(
-    gl,
-    shaderProgramGlobal,
-    "data.json",
-    renderer
-  );
+
+  initModelFile(gl, shaderProgramGlobal, "data.json", renderer);
   console.log("import succeed");
-  
 }
 
 function updateLineLength() {
@@ -173,14 +162,14 @@ function showObjId(id, htmlid) {
 function getClickedGLObject() {
   const id = appState.selId;
   showObjId(id, "sel-id");
-  return GLobjectList.find((x) => x.id === id);
+  return renderer.objectList.find((x) => x.id === id);
 }
 
 function recolorSelectedObject(id) {
   // console.log(appState);
   // Recolors the selected object
   if (id >= 0) {
-    var selObj = GLobjectList.find((x) => x.id === id);
+    var selObj = renderer.objectList.find((x) => x.id === id);
 
     if (selObj) {
       // Resets the old object color
@@ -200,7 +189,9 @@ function recolorSelectedObject(id) {
 
   function resetSelObjColor() {
     if (appState.oldPick != -1) {
-      var oldSelObj = GLobjectList.find((x) => x.id === appState.oldPick);
+      var oldSelObj = renderer.objectList.find(
+        (x) => x.id === appState.oldPick
+      );
       oldSelObj.SetColorByArray(appState.oldPickColor);
     }
   }
@@ -227,9 +218,9 @@ function createDraggers(obj) {
   if (obj) {
     for (let index = 0; index < obj.va.length / 2; index++) {
       // const element = array[index];
-      console.log(
-        "Checking " + obj.va[index * 2] + " , " + obj.va[index * 2 + 1]
-      );
+      // console.log(
+      //   "Checking " + obj.va[index * 2] + " , " + obj.va[index * 2 + 1]
+      // );
 
       // check if there has been a duplicate vertex
       let prevDupVertId = -1;
@@ -242,18 +233,32 @@ function createDraggers(obj) {
         }
       }
 
-      console.log("Found prev dup at " + prevDupVertId);
+      // console.log("Found prev dup at " + prevDupVertId);
+      // console.log("obj.projectionMat : " + obj.projectionMat);
 
       // if there were no duplicates, make a new dragger
       if (prevDupVertId === -1) {
-        console.log("REEEE");
+        // console.log("REEEE");
         var neoDragger = new GLObjectDragger(
           baseDraggerId + tempUniqVertList.length,
           shaderProgramGlobal,
           gl
         );
         neoDragger.addVertexId(index);
-        neoDragger.setPosition(obj.va[index * 2], obj.va[index * 2 + 1]);
+
+        const up = obj.va[index * 2];
+        const vp = obj.va[index * 2 + 1];
+        const vertPosMat = [1, 0, 0, 0, 1, 0, up, vp, 1];
+
+        // const neoPosMat = multiplyMatrix(obj.projectionMat, vertPosMat, 3);
+        const neoPosMat = multiplyMatrix(vertPosMat, obj.projectionMat, 3);
+        // console.log("Matrices : ");
+        // console.log(vertPosMat);
+        // console.log(obj.projectionMat);
+        // console.log(neoPosMat);
+
+        // neoDragger.setPosition(obj.va[index * 2], obj.va[index * 2 + 1]);
+        neoDragger.setPosition(neoPosMat[6], neoPosMat[7]);
         neoDragger.centerOriginsSetOffsetAndFixVertices();
         neoDragger.assignProjectionMatrix();
 
@@ -276,13 +281,26 @@ function createDraggers(obj) {
 
 function moveObjVertex(draggerObj, obj) {
   let oldObjVertex = obj.va;
+  const objProjMat = obj.projectionMat;
+
+  // console.log(neoPosMat);
   for (let index = 0; index < draggerObj.vertId.length; index++) {
+    // const up = draggerObj.pos[0];
+    // const vp = draggerObj.pos[1];
+    // const vertPosMat = [1, 0, 0, 0, 1, 0, -up, -vp, 1];
+    // // const neoPosMat = multiplyMatrix(obj.projectionMat, vertPosMat, 3);
+    // const tempInversProjMat = (10, 0, 0, 0, 10, 0, -2700, -2700, 1);
+    // // const neoPosMat = multiplyMatrix(vertPosMat, tempInversProjMat, 3);
+    // const neoPosMat = multiplyMatrix(tempInversProjMat, vertPosMat, 3);
+    //
     oldObjVertex[draggerObj.vertId[index] * 2] = draggerObj.pos[0];
     oldObjVertex[draggerObj.vertId[index] * 2 + 1] = draggerObj.pos[1];
-    // let deltaX = appState.mousePos.x - appState.dragStart.x;
-    // let deltaY = appState.mousePos.y - appState.dragStart.y;
-    // oldObjVertex[draggerObj.vertId * 2] += deltaX;
-    // oldObjVertex[draggerObj.vertId * 2 + 1] += deltaY;
+
+    // console.log();
+    // // let deltaX = appState.mousePos.x - appState.dragStart.x;
+    // // let deltaY = appState.mousePos.y - appState.dragStart.y;
+    // // oldObjVertex[draggerObj.vertId * 2] += deltaX;
+    // // oldObjVertex[draggerObj.vertId * 2 + 1] += deltaY;
   }
   obj.setVertexArray(oldObjVertex);
 }
@@ -361,12 +379,12 @@ async function main() {
         appState.draggedHandle = null;
         // console.log(appState.selectedObject);
       }
-      console.log("D");
+      // console.log("D");
       if (appState.draggedHandle) {
-        console.log("rs");
+        // console.log("rs");
         // appState.dragStart = (appState.mousePos.x, appState.mousePos.y);
-        console.log("appState.mousePos : ");
-        console.log(appState.mousePos);
+        // console.log("appState.mousePos : ");
+        // console.log(appState.mousePos);
         const res = {
           x: appState.mousePos.x,
           y: appState.mousePos.y,
@@ -383,21 +401,21 @@ async function main() {
     "mouseup",
     function (event) {
       if (appState.draggedHandle) {
-        console.log("re");
-        console.log(appState.draggedHandle);
+        // console.log("re");
+        // console.log(appState.draggedHandle);
         // appState.dragEnd = (appState.mousePos.x, appState.mousePos.y);
         appState.draggedHandle.setPosition(
           appState.mousePos.x,
           gl.canvas.height - appState.mousePos.y
         );
         appState.draggedHandle.assignProjectionMatrix();
-        console.log(appState.draggedHandle);
-        console.log("appState.mousePos : ");
-        console.log(appState.mousePos);
+        // console.log(appState.draggedHandle);
+        // console.log("appState.mousePos : ");
+        // console.log(appState.mousePos);
         moveObjVertex(appState.draggedHandle, appState.selectedObject);
       }
       appState.draggedHandle = null;
-      console.log("ag");
+      // console.log("ag");
     },
     false
   );
@@ -419,11 +437,11 @@ async function main() {
 
   // Change Line Length
   btnUpdateLineLength.addEventListener("click", updateLineLength);
-  
+
   // Export & Import Model
   btnExportModel.addEventListener("click", exportModel);
   btnImportModel.addEventListener("click", importModel);
-  
+
   // const triangleData = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0]; // in clip space
   const triangleData = [400, 400.0, 400.0, 200.0, 200.0, 400.0]; // in pixel space
   // const triangleData = [0, 0, 200, 0, 0, 200]; // in pixel space
@@ -544,13 +562,14 @@ async function main() {
   // glObject.bind();
   // glObject.draw();
 
+  // const glObject = new GLObjectLine(1, shaderProgram, gl);
   const glObject = new GLObjectRectangle(1, shaderProgram, gl);
   // glObject.setVertexArray([100, 100, 200, 200]);
   glObject.setVertexArray(rectangleData);
   glObject.SetColorByArray([1, 0, 0, 0.2]);
   glObject.setPosition(0, 0);
   glObject.setRotation(0);
-  glObject.setScale(0.1, 0.1);
+  glObject.setScale(1, 1);
   glObject.centerOriginsSetOffsetAndFixVertices();
   glObject.assignProjectionMatrix();
 
@@ -583,11 +602,11 @@ async function main() {
   // var timer = 0;
 
   // Creates a renderer and renders the previous objects
-  GLobjectList = renderer.objectList;
-  console.log("GLobjectList : " + GLobjectList);
+  renderer.objectList = renderer.objectList;
+  // console.log("renderer.objectList : " + renderer.objectList);
   renderer.addObject(glObject);
   //renderer.addObject(glObject3);
-  console.log("GLobjectList : " + GLobjectList);
+  // console.log("renderer.objectList : " + renderer.objectList);
   renderer.render();
 
   function render(now) {
