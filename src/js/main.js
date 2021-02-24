@@ -222,21 +222,52 @@ function createDraggers(obj) {
   // draggers.clear();
   draggerRenderer.objectList = [];
 
+  let tempUniqVertList = [];
+
   if (obj) {
     for (let index = 0; index < obj.va.length / 2; index++) {
       // const element = array[index];
-      console.log("REEEE");
-      var neoDragger = new GLObjectDragger(
-        baseDraggerId + index,
-        shaderProgramGlobal,
-        gl
+      console.log(
+        "Checking " + obj.va[index * 2] + " , " + obj.va[index * 2 + 1]
       );
-      neoDragger.setVertexId(index);
-      neoDragger.setPosition(obj.va[index * 2], obj.va[index * 2 + 1]);
-      neoDragger.centerOriginsSetOffsetAndFixVertices();
-      neoDragger.assignProjectionMatrix();
 
-      draggerRenderer.addObject(neoDragger);
+      // check if there has been a duplicate vertex
+      let prevDupVertId = -1;
+      for (let i = 0; i < tempUniqVertList.length; i++) {
+        if (
+          tempUniqVertList[i][0] === obj.va[index * 2] &&
+          tempUniqVertList[i][1] === obj.va[index * 2 + 1]
+        ) {
+          prevDupVertId = i;
+        }
+      }
+
+      console.log("Found prev dup at " + prevDupVertId);
+
+      // if there were no duplicates, make a new dragger
+      if (prevDupVertId === -1) {
+        console.log("REEEE");
+        var neoDragger = new GLObjectDragger(
+          baseDraggerId + tempUniqVertList.length,
+          shaderProgramGlobal,
+          gl
+        );
+        neoDragger.addVertexId(index);
+        neoDragger.setPosition(obj.va[index * 2], obj.va[index * 2 + 1]);
+        neoDragger.centerOriginsSetOffsetAndFixVertices();
+        neoDragger.assignProjectionMatrix();
+
+        draggerRenderer.addObject(neoDragger);
+
+        tempUniqVertList.push([obj.va[index * 2], obj.va[index * 2 + 1]]);
+      } else {
+        // else add this vertex to the correct dragger
+        let idToFind = baseDraggerId + prevDupVertId;
+        let prevDupDragger = draggerRenderer.objectList.find(
+          (x) => x.id === idToFind
+        );
+        prevDupDragger.addVertexId(index);
+      }
     }
   }
 
@@ -245,13 +276,14 @@ function createDraggers(obj) {
 
 function moveObjVertex(draggerObj, obj) {
   let oldObjVertex = obj.va;
-  oldObjVertex[draggerObj.vertId * 2] = draggerObj.pos[0];
-  oldObjVertex[draggerObj.vertId * 2 + 1] = draggerObj.pos[1];
-  // let deltaX = appState.mousePos.x - appState.dragStart.x;
-  // let deltaY = appState.mousePos.y - appState.dragStart.y;
-  // oldObjVertex[draggerObj.vertId * 2] += deltaX;
-  // oldObjVertex[draggerObj.vertId * 2 + 1] += deltaY;
-
+  for (let index = 0; index < draggerObj.vertId.length; index++) {
+    oldObjVertex[draggerObj.vertId[index] * 2] = draggerObj.pos[0];
+    oldObjVertex[draggerObj.vertId[index] * 2 + 1] = draggerObj.pos[1];
+    // let deltaX = appState.mousePos.x - appState.dragStart.x;
+    // let deltaY = appState.mousePos.y - appState.dragStart.y;
+    // oldObjVertex[draggerObj.vertId * 2] += deltaX;
+    // oldObjVertex[draggerObj.vertId * 2 + 1] += deltaY;
+  }
   obj.setVertexArray(oldObjVertex);
 }
 
@@ -280,7 +312,7 @@ async function main() {
       if (appState.draggedHandle && appState.selectedObject) {
         appState.draggedHandle.setPosition(res.x, gl.canvas.height - res.y);
         appState.draggedHandle.assignProjectionMatrix();
-        console.log("reee");
+        // console.log("reee");
         moveObjVertex(appState.draggedHandle, appState.selectedObject);
       }
     },
@@ -301,7 +333,7 @@ async function main() {
     function () {
       if (appState.selId < baseDraggerId) {
         let clickedGLObject = getClickedGLObject();
-        recolorSelectedObject(appState.selId);
+        // recolorSelectedObject(appState.selId);
         if (clickedGLObject && clickedGLObject.id < baseDraggerId) {
           // console.log(appState.selectedObject);
           appState.selectedObject = clickedGLObject;
@@ -554,7 +586,6 @@ async function main() {
   GLobjectList = renderer.objectList;
   console.log("GLobjectList : " + GLobjectList);
   renderer.addObject(glObject);
-  //renderer.addObject(glObject2);
   //renderer.addObject(glObject3);
   console.log("GLobjectList : " + GLobjectList);
   renderer.render();
@@ -588,7 +619,7 @@ async function main() {
     // drawing texture
     const frameBuffer = frameBuf;
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
-    gl.enable(gl.DEPTH_TEST);
+    // gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(selectProgram);
     const resolutionPos = gl.getUniformLocation(selectProgram, "u_resolution");
@@ -613,8 +644,8 @@ async function main() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     // draw the actual objects
     gl.useProgram(shaderProgram);
-    draggerRenderer.render();
     renderer.render();
+    draggerRenderer.render();
     requestAnimationFrame(render);
   }
 
