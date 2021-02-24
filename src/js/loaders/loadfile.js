@@ -8,7 +8,7 @@ async function fetchFile(filename) {
   // source is a string
   // fetches the actual shader source file, and return its contents as string
   const json = await fetch(filename).then((res) => res.text());
-  console.log(json);
+  // console.log(json);
   return json;
 }
 
@@ -52,7 +52,7 @@ async function initModelFile(gl, shaderProgram, filename, renderer) {
     }
     glObject.assignProjectionMatrix();
     renderer.addObject(glObject);
-    console.log("Object added");
-    console.log(renderer);
+    // console.log("Object added");
+    // console.log(renderer);
   }
 }
