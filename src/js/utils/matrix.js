@@ -20,12 +20,16 @@ function get2DMatrixDeternminant(array2dmatrix) {
 }
 
 function get3DMatrixDeternminant(array) {
-  let det = 0;
+  let det = 0.0;
   for (let index = 0; index < 3; index++) {
     const element = array[index];
-    const matrixMinor = getMatrixMinor(array, 3, index, index);
+    // console.log(
+    //   "Multiplying... " + element + " WITH MINOR for " + index + " : "
+    // );
+    const matrixMinor = getMatrixMinor(array, 3, 0, index);
+    // console.log(matrixMinor);
     const minorDet = get2DMatrixDeternminant(matrixMinor);
-    if (index % 2 === 0) {
+    if (index === 0 || index === 2) {
       // kalau genap (dari 0) positif
       det += element * minorDet;
     } else {
@@ -99,8 +103,13 @@ function getCofactoredMatrix(array, colsize) {
 function getMatrixInverse(array, colsize) {
   const matrixOfMinors = getMatrixOfMinors(array, colsize);
   const matrixOfCofactors = getCofactoredMatrix(matrixOfMinors, colsize);
+  // console.log("cofactors :  ");
+  // console.log(matrixOfCofactors);
   const transPosedMatrixOfCofactors = transposeMatrix(matrixOfCofactors, 3);
+  // console.log("transPosedMatrixOfCofactors :  ");
+  // console.log(transPosedMatrixOfCofactors);
   const determinant = get3DMatrixDeternminant(array);
+  // console.log("det " + determinant);
 
   let tempMat = [];
   for (let index = 0; index < transPosedMatrixOfCofactors.length; index++) {

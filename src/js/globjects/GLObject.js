@@ -16,8 +16,6 @@ class GLObject {
     // for origin and offset
     this.origin; // the position of the origin, preferably somewhere near the center of the object
     this.offset = [0, 0]; // the offset, this will be added to the translation of the object... it is separated so that the translation can still act as if this doesn't exist
-
-    this.temp = 0;
   }
 
   setVertexArray(va) {
@@ -61,18 +59,10 @@ class GLObject {
     const vo = this.offset.slice()[1];
     const origMat = [1, 0, 0, 0, 1, 0, uo, vo, 1];
     const negaOrigMat = [1, 0, 0, 0, 1, 0, -uo, -vo, 1];
-    if (this.temp < 5) {
-      // console.log("origMat[" + this.id + "] : " + origMat);
-    }
 
-    const u = this.pos[0]; //- this.offset[0] / 2;
-    const v = this.pos[1]; //- this.offset[1] / 2;
+    const u = this.pos[0];
+    const v = this.pos[1];
     const translateMat = [1, 0, 0, 0, 1, 0, u, v, 1];
-    // const translateMat = multiplyMatrix(
-    //   multiplyMatrix(origMat, translateMatOld, 3),
-    //   -origMat,
-    //   3
-    // );
 
     const degrees = this.rot;
     const rad = (degrees * Math.PI) / 180;
@@ -81,50 +71,21 @@ class GLObject {
     const rotationMat = [cos, -sin, 0, sin, cos, 0, 0, 0, 1];
     const [k1, k2] = this.scale;
     const scaleMat = [k1, 0, 0, 0, k2, 0, 0, 0, 1];
-    // const projectionMat = multiplyMatrix(
-    //   multiplyMatrix(rotationMat, scaleMat, 3),
-    //   translateMat,
-    //   3
-    //   // multiplyMatrix(translateMat, rotationMat, 3),
-    //   // scaleMat,
-    //   // 3
-    // );
 
-    const projectionMat =
-      // multiplyMatrix(
+    const projectionMat = multiplyMatrix(
       multiplyMatrix(
+        multiplyMatrix(multiplyMatrix(negaOrigMat, rotationMat, 3), origMat, 3),
         multiplyMatrix(
-          multiplyMatrix(
-            multiplyMatrix(negaOrigMat, rotationMat, 3),
-            // rotationMat,
-            origMat,
-            3
-          ),
-          multiplyMatrix(
-            multiplyMatrix(negaOrigMat, scaleMat, 3),
-            // rotationMat,
-            origMat,
-            3
-          ),
-          // scaleMat,
+          multiplyMatrix(negaOrigMat, scaleMat, 3),
+
+          origMat,
           3
         ),
-        translateMat,
         3
-        // ),
-        // negaOrigMat,
-        // 3
-      );
-    if (this.temp < 5) {
-      // console.log("rotationMat : " + rotationMat);
-      // console.log("origMat : " + origMat);
-      // console.log(
-      //   "multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3) : " +
-      //     multiplyMatrix(multiplyMatrix(-origMat, rotationMat, 3))
-      // );
-      // console.log("projectionMat[" + this.id + "] : " + projectionMat);
-      this.temp += 1;
-    }
+      ),
+      translateMat,
+      3
+    );
     return projectionMat;
   }
 
@@ -152,41 +113,8 @@ class GLObject {
     // console.log("Origins : " + this.origin);
 
     this.offset = [this.origin[0], this.origin[1]].slice();
-    // var tempVa = [];
-    // for (let i = 0; i < numOfVertices; i = i + 2) {
-    //   // if (this.va[i] < this.origin[0]) {
-    //   //   this.va[i] -= this.origin[0];
-    //   // } else {
-    //   //   this.va[i] += this.origin[0];
-    //   // }
-    //   tempVa[i] = this.va[i] - this.origin[0];
 
-    //   tempVa[i + 1] = this.va[i + 1] - this.origin[1];
-    //   // if (this.va[i + 1] < this.origin[1]) {
-    //   //   this.va[i + 1] -= this.origin[1];
-    //   // } else {
-    //   //   this.va[i + 1] += this.origin[1];
-    //   // }
-    // }
-    // this.setVertexArray(tempVa);
-
-    // console.log("CORECCTED VA : " + this.va);
     this.assignProjectionMatrix();
-
-    // function uniq_fast(array) {
-    //   var seen = {};
-    //   var out = [];
-    //   var len = array.length;
-    //   var j = 0;
-    //   for (var i = 0; i < len; i++) {
-    //     var item = array[i];
-    //     if (seen[item] !== 1) {
-    //       seen[item] = 1;
-    //       out[j++] = item;
-    //     }
-    //   }
-    //   return out;
-    // }
   }
 
   bind() {
@@ -203,12 +131,6 @@ class GLObject {
   }
 
   draw() {
-    // Gonna delete this later
-
-    if (this.temp < 20) {
-      // this.temp++;
-      // // console.log(this.va);
-    }
     const gl = this.gl;
     gl.useProgram(this.shader);
     var vertexPos = gl.getAttribLocation(this.shader, "a_pos");

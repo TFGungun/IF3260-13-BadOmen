@@ -1,6 +1,6 @@
 const baseDraggerId = 1000000;
 
-let draggedObjectInvProjMat = [];
+let draggedObjectInvProjMat = null;
 
 function getClickedDragger() {
   const id = appState.selId;
@@ -12,6 +12,7 @@ function createDraggers(obj) {
   draggerRenderer.clearObjList();
   let tempUniqVertList = [];
 
+  draggedObjectInvProjMat = null;
   if (obj) {
     draggedObjectInvProjMat = getMatrixInverse(obj.projectionMat, 3);
     for (let index = 0; index < obj.va.length / 2; index++) {
