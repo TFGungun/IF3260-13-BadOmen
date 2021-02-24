@@ -201,6 +201,8 @@ const baseDraggerId = 1000000;
 
 let shaderProgramGlobal;
 
+let draggedObjectInvProjMat = [];
+
 const draggerRenderer = new Renderer();
 // draggers = draggerRenderer.objectList;
 // draggerRenderer.objectList = draggers;
@@ -212,10 +214,11 @@ function getClickedDragger() {
 function createDraggers(obj) {
   // draggers.clear();
   draggerRenderer.objectList = [];
-
   let tempUniqVertList = [];
 
   if (obj) {
+    draggedObjectInvProjMat = getMatrixInverse(obj.projectionMat, 3);
+    console.log("Inverted proj mat : " + draggedObjectInvProjMat);
     for (let index = 0; index < obj.va.length / 2; index++) {
       // const element = array[index];
       // console.log(
@@ -252,10 +255,10 @@ function createDraggers(obj) {
 
         // const neoPosMat = multiplyMatrix(obj.projectionMat, vertPosMat, 3);
         const neoPosMat = multiplyMatrix(vertPosMat, obj.projectionMat, 3);
-        // console.log("Matrices : ");
-        // console.log(vertPosMat);
-        // console.log(obj.projectionMat);
-        // console.log(neoPosMat);
+        console.log("Matrices : ");
+        console.log(vertPosMat);
+        console.log(obj.projectionMat);
+        console.log(neoPosMat);
 
         // neoDragger.setPosition(obj.va[index * 2], obj.va[index * 2 + 1]);
         neoDragger.setPosition(neoPosMat[6], neoPosMat[7]);
@@ -276,7 +279,7 @@ function createDraggers(obj) {
     }
   }
 
-  console.log(draggerRenderer.objectList);
+  // console.log(draggerRenderer.objectList);
 }
 
 function moveObjVertex(draggerObj, obj) {
@@ -285,16 +288,18 @@ function moveObjVertex(draggerObj, obj) {
 
   // console.log(neoPosMat);
   for (let index = 0; index < draggerObj.vertId.length; index++) {
-    // const up = draggerObj.pos[0];
-    // const vp = draggerObj.pos[1];
-    // const vertPosMat = [1, 0, 0, 0, 1, 0, -up, -vp, 1];
+    const up = draggerObj.pos[0];
+    const vp = draggerObj.pos[1];
+    const neoPosMat = [1, 0, 0, 0, 1, 0, up, vp, 1];
     // // const neoPosMat = multiplyMatrix(obj.projectionMat, vertPosMat, 3);
     // const tempInversProjMat = (10, 0, 0, 0, 10, 0, -2700, -2700, 1);
     // // const neoPosMat = multiplyMatrix(vertPosMat, tempInversProjMat, 3);
-    // const neoPosMat = multiplyMatrix(tempInversProjMat, vertPosMat, 3);
+    const neoVertMat = multiplyMatrix(neoPosMat, draggedObjectInvProjMat, 3);
     //
-    oldObjVertex[draggerObj.vertId[index] * 2] = draggerObj.pos[0];
-    oldObjVertex[draggerObj.vertId[index] * 2 + 1] = draggerObj.pos[1];
+    oldObjVertex[draggerObj.vertId[index] * 2] = neoVertMat[6];
+    oldObjVertex[draggerObj.vertId[index] * 2 + 1] = neoVertMat[7];
+    // oldObjVertex[draggerObj.vertId[index] * 2] = draggerObj.pos[0];
+    // oldObjVertex[draggerObj.vertId[index] * 2 + 1] = draggerObj.pos[1];
 
     // console.log();
     // // let deltaX = appState.mousePos.x - appState.dragStart.x;
@@ -372,7 +377,7 @@ async function main() {
     function (event) {
       // store a ref. on the dragged elem
       let clickedGLObject = getClickedDragger();
-      console.log(clickedGLObject);
+      // console.log(clickedGLObject);
       if (clickedGLObject && clickedGLObject.id >= baseDraggerId) {
         appState.draggedHandle = clickedGLObject;
       } else {
@@ -567,9 +572,9 @@ async function main() {
   // glObject.setVertexArray([100, 100, 200, 200]);
   glObject.setVertexArray(rectangleData);
   glObject.SetColorByArray([1, 0, 0, 0.2]);
-  glObject.setPosition(0, 0);
-  glObject.setRotation(0);
-  glObject.setScale(1, 1);
+  glObject.setPosition(50, 100);
+  glObject.setRotation(45);
+  glObject.setScale(0.7, 0.7);
   glObject.centerOriginsSetOffsetAndFixVertices();
   glObject.assignProjectionMatrix();
 
